@@ -1,0 +1,164 @@
+# This is the configuration file for the i3 tiling window manager used by ForeverBostick
+# Obviously
+
+# Set which key you want to use as your Mod key. You can technically select between 5 different ones,
+# but really only Mod1 (Alt) and Mod4 (Super/Windows) are used anymore. Mod2 is NumLock and Mod3 & Mod5
+# don't really exist on modern keyboards anymore
+
+# I like using Super/Windows so I'm going with Mod4
+set $mod Mod4
+
+# Get rid of title bars because UGLY
+for_window [class="^.*"] border pixel 5
+smart_borders no_gaps
+
+# Autostart applications
+exec --no-startup-id nm-applet
+exec --no-startup-id nitrogen --restore
+exec --no-startup-id alsa-tray
+exec --no-startup-id picom
+exec --no-startup-id quiterss
+
+# Setup external screen when docked
+exec --no-startup-id xrandr --output VGA-1-2 --auto --right-of LVDS-1
+
+# The important stuff now - KEY BINDINGS
+
+# First, boring stuff - volume control
+set $refresh_i3status killall -SIGUSR1 i3status
+bindsym XF86AudioRaiseVolume exec --no-startup-id pactl set-sink-volume @DEFAULT_SINK@ +10% && $refresh_i3status
+bindsym XF86AudioLowerVolume exec --no-startup-id pactl set-sink-volume @DEFAULT_SINK@ -10% && $refresh_i3status
+bindsym XF86AudioMute exec --no-startup-id pactl set-sink-mute @DEFAULT_SINK@ toggle && $refresh_i3status
+bindsym XF86AudioMicMute exec --no-startup-id pactl set-source-mute @DEFAULT_SOURCE@ toggle && $refresh_i3status
+
+# Launch your terminal. I like Alacritty
+bindsym $mod+Return exec alacritty
+
+# Close the focused window
+bindsym $mod+q kill
+
+# Open your app launcher. I use Rofi
+bindsym $mod+space exec --no-startup-id rofi -show run
+
+# Switch focus to different windows
+bindsym $mod+Left focus left
+bindsym $mod+Right focus right
+bindsym $mod+Up focus up
+bindsym $mod+Down focus down
+
+# Move the focused window within the same workspace
+bindsym $mod+Shift+Left move left
+bindsym $mod+Shift+Right move right
+bindsym $mod+Shift+Up move up
+bindsym $mod+Shift+Down move down
+
+# These options toggle to different layouts. I pretty much use tiling exclusively, but I might
+# want to play around with them at some point, so I'll just comment them out
+#bindsym $mod+s layout stacking
+#bindsym $mod+t layout tabbed
+bindsym $mod+g layout toggle split
+
+# I'm going to actually keep this one just in case I need to make a window float for some reason
+bindsym $mod+f floating toggle
+# And to switch focus between the tiled and floating windows
+bindsym $mod+Shift+f focus mode_toggle
+
+# 90% of the reason I use i3 is being able to manually choose where the next window is going to populate
+# split in horizontal orientation
+bindsym $mod+h split h
+
+# split in vertical orientation
+bindsym $mod+v split v
+
+# Switch to different workspaces. These will be defined later
+bindsym $mod+1 workspace number $ws1
+bindsym $mod+2 workspace number $ws2
+bindsym $mod+3 workspace number $ws3
+bindsym $mod+4 workspace number $ws4
+bindsym $mod+5 workspace number $ws5
+bindsym $mod+6 workspace number $ws6
+bindsym $mod+7 workspace number $ws7
+bindsym $mod+8 workspace number $ws8
+bindsym $mod+9 workspace number $ws9
+bindsym $mod+0 workspace number $ws10
+
+# Move focused window to *nyegh* workspace
+bindsym $mod+Shift+1 move container to workspace number $ws1
+bindsym $mod+Shift+2 move container to workspace number $ws2
+bindsym $mod+Shift+3 move container to workspace number $ws3
+bindsym $mod+Shift+4 move container to workspace number $ws4
+bindsym $mod+Shift+5 move container to workspace number $ws5
+bindsym $mod+Shift+6 move container to workspace number $ws6
+bindsym $mod+Shift+7 move container to workspace number $ws7
+bindsym $mod+Shift+8 move container to workspace number $ws8
+bindsym $mod+Shift+9 move container to workspace number $ws9
+bindsym $mod+Shift+0 move container to workspace number $ws10
+
+# Reload i3 without closing your session, like to load in edits to the config file
+bindsym $mod+Shift+r restart
+
+# Exit 13 and logout back to the display manager
+# You'll be prompted to make sure you don't do this by accident, even though the key combo is kinda hard
+bindsym $mod+Shift+Escape exec "i3-nagbar -t warning -m 'You pressed the exit shortcut. Do you really want to exit i3? This will end your X session.' -B 'Yes, exit i3' 'i3-msg exit'"
+
+# Resizing controls for active window
+bindsym $mod+Control+Left resize shrink width 2 px or 2 ppt
+bindsym $mod+Control+Right resize grow width 2 px or 2 ppt
+bindsym $mod+Control+Up resize grow height 2 px or 2 ppt
+bindsym $mod+Control+Down resize shrink height 2 px or 2 ppt
+
+# Setting up the workspaces
+set $ws1 "1-1"
+set $ws2 "2-1"
+set $ws3 "1-2"
+set $ws4 "2-2"
+set $ws5 "1-3"
+set $ws6 "2-3"
+set $ws7 "1-4"
+set $ws8 "2-4"
+set $ws9 "1-5"
+set $ws10 "2-5"
+
+# Assign workspaces to screens
+# So this kinda breaks when I use my laptop undocked. I'm only able to switch between one workspace dedicated to
+# monitor 1 and one workspace dedicated to monitor 2. If anybody finds this and knows how to fix it so I can at least
+# use all the workspaces for monitor 1, let me know. I don't have a need for them very often when I'm in laptop mode,
+# but it's super annoying when I do.
+workspace 1-1 output LVDS-1
+workspace 1-2 output LVDS-1
+workspace 1-3 output LVDS-1
+workspace 1-4 output LVDS-1
+workspace 1-5 output LVDS-1
+workspace 2-1 output VGA-1-2
+workspace 2-2 output VGA-1-2
+workspace 2-3 output VGA-1-2
+workspace 2-4 output VGA-1-2
+workspace 2-5 output VGA-1-2
+
+# Disable focus automatically following the mouse. That's super annoying.
+focus_follows_mouse no
+
+#i3bar configuration
+bar {
+	status_command i3status
+	position top
+	tray_padding 5 px
+	font pango:Terminus 10
+	separator_symbol ">|<"
+}
+
+# Let's set the color of some things
+
+# Class						border		backgr.		text		indicator	child border
+client.focused          	#FF0000 	#FFFFFF 	#ffffff 	#ff5a72   	#23f1ef
+client.focused_inactive 	#333333 	#5f676a 	#ffffff 	#fef993   	#fef993
+client.unfocused        	#333333 	#222222 	#888888 	#292d2e   	#222222
+client.urgent           	#2f343a 	#900000 	#ffffff 	#fe5b6e   	#fe5b6e
+client.placeholder      	#000000 	#0c0c0c 	#ffffff 	#000000   	#0c0c0c
+
+client.background       #ffffff
+
+# Set up gaps
+smart_gaps inverse_outer
+gaps inner 20
+gaps outer 10
